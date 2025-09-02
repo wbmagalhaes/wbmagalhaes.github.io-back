@@ -32,18 +32,16 @@ jobs:
           docker build -t 138654649620.dkr.ecr.us-east-1.amazonaws.com/wbmagalhaes:latest .
           docker push 138654649620.dkr.ecr.us-east-1.amazonaws.com/wbmagalhaes:latest
 
-      - name: SSH into EC2 and update containers
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          username: ubuntu
-          host: ${{ secrets.AWS_EC2_HOST }}
-          key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          script: |
-            aws ecr get-login-password --region us-east-1 \
-              | docker login --username AWS --password-stdin 138654649620.dkr.ecr.us-east-1.amazonaws.com
-
-            docker pull 138654649620.dkr.ecr.us-east-1.amazonaws.com/wbmagalhaes:latest
-
-            cd ~/app
-            docker compose down
-            docker compose up -d
+      - name: Deploy via SSM
+        run: |
+          aws ssm send-command \
+            --targets "Key=InstanceIds,Values=${{ secrets.AWS_EC2_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy Go app + Redis" \
+            --parameters 'commands=[
+              "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 138654649620.dkr.ecr.us-east-1.amazonaws.com",
+              "cd /home/ubuntu/app",
+              "docker compose pull",
+              "docker compose down",
+              "docker compose up -d"
+            ]'
