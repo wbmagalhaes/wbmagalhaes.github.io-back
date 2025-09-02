@@ -9,8 +9,8 @@ permissions:
 
 jobs:
   deploy:
+    environment: PRD
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -36,8 +36,8 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           username: ubuntu
-          host: ${{ secrets.EC2_HOST }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.AWS_EC2_HOST }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
           script: |
             aws ecr get-login-password --region us-east-1 \
               | docker login --username AWS --password-stdin 138654649620.dkr.ecr.us-east-1.amazonaws.com
