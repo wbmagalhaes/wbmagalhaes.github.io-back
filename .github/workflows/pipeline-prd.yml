@@ -40,7 +40,7 @@ jobs:
             --comment "Deploy Go app + Redis" \
             --parameters 'commands=[
               "cd /home/ubuntu/app",
-              "docker-compose pull",
-              "docker-compose down",
-              "docker-compose up -d"
+              "sudo -u ubuntu docker-compose pull",
+              "sudo -u ubuntu docker-compose down",
+              "sudo -u ubuntu docker-compose up -d"
             ]'
