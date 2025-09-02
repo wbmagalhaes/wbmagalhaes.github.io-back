@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  app:
+    image: 138654649620.dkr.ecr.us-east-1.amazonaws.com/wbmagalhaes:latest
+    container_name: wbmagalhaes
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    volumes:
+      - sqlite_data:/app/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: always
+    volumes:
+      - redis_data:/data
+
+volumes:
+  sqlite_data:
+  redis_data:
